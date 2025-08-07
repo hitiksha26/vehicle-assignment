@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchAllMakes, fetchModelsForMake } from "@/hooks/useVehicleAPI";
 import Select from 'react-select';
+import Link from "next/link";
 
 type Make = { Make_ID: number; Make_Name: string };
 type Model = { Make_ID: number; Make_Name: string; Model_ID: number; Model_Name: string }
@@ -32,6 +33,11 @@ export default function HomePage() {
     getMakes();
   }, []);
 
+  useEffect(() => {
+    setModels([]);
+    setHasFetchedModels(false);
+  }, [selectedMake]);
+
   return (
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-6 text-center">Vehicle Make & Model Finder</h1>
@@ -49,23 +55,30 @@ export default function HomePage() {
             className="text-black"
             isLoading={makes.length === 0}
           />
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
 
-          <button
-            onClick={async () => {
-              if (!selectedMake) return;
-              setHasFetchedModels(true);
-              setLoadingModels(true);
-              const data = await fetchModelsForMake(selectedMake);
-              setModels(data);
-              setLoadingModels(false);
-            }}
-            disabled={!selectedMake}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-          >
-            Fetch Models
-          </button>
-
-        </div>
+            <button
+              onClick={async () => {
+                if (!selectedMake) return;
+                setHasFetchedModels(true);
+                setLoadingModels(true);
+                const data = await fetchModelsForMake(selectedMake);
+                setModels(data);
+                setLoadingModels(false);
+              }}
+              disabled={!selectedMake}
+              className="bg-blue-500 text-white px-4 py-2 rounded 
+             enabled:hover:bg-blue-700 
+             disabled:opacity-50 disabled:cursor-not-allowed"            >
+              Fetch Models
+            </button>
+            <Link
+              href="/ssr"
+              className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition text-center"
+            >
+              🔁 Try SSR Version
+            </Link>
+          </div></div>
         {loadingModels && <p className="text-green-600 mt-4">Loading models...</p>}
 
         {!loadingModels && hasFetchedModels && selectedMake && models.length === 0 && (
