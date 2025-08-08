@@ -1,5 +1,5 @@
 'use client';
-
+import React from 'react';
 import { useEffect, useState } from "react";
 import { fetchAllMakes, fetchModelsForMake } from "@/hooks/useVehicleAPI";
 import Select from 'react-select';
@@ -40,6 +40,14 @@ export default function HomePage() {
 
   return (
     <main className="p-6">
+      <div className="flex justify-start mb-4">
+        <Link
+          href="/ssr"
+          className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition text-center"
+        >
+          🔁 Try SSR Version
+        </Link>
+      </div>
       <h1 className="text-2xl font-bold mb-6 text-center">Vehicle Make & Model Finder</h1>
       <div className="w-full bg-gray-50 p-6 rounded shadow-md">
 
@@ -72,12 +80,7 @@ export default function HomePage() {
              disabled:opacity-50 disabled:cursor-not-allowed"            >
               Fetch Models
             </button>
-            <Link
-              href="/ssr"
-              className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700 transition text-center"
-            >
-              🔁 Try SSR Version
-            </Link>
+
           </div></div>
         {loadingModels && <p className="text-green-600 mt-4">Loading models...</p>}
 

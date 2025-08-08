@@ -1,5 +1,6 @@
 'use client';
 
+import React from "react";
 import { useState } from "react";
 import { fetchModelsForMake } from "@/hooks/useVehicleAPI";
 import Select from 'react-select';
@@ -26,11 +27,20 @@ export default function SSRMakeModel({ serverMakes }: Props) {
 
     return (
         <main className="p-6">
+            <div className="flex justify-start mb-4">
+                <Link
+                    href="/"
+                    className="bg-purple-400 text-white px-4 py-2 rounded hover:bg-purple-800 transition text-center"
+                >
+                    🔙 Back to Home
+                </Link>
+            </div>
             <h1 className="text-2xl font-bold mb-6 text-center">SSR Vehicle Make & Model Finder</h1>
             <div className="w-full bg-gray-50 p-6 rounded shadow-md">
                 <div className="mb-2">
-                    <label className="block mb-1 font-bold">Select Vehicle Make</label>
+                    <label htmlFor="vehicle-make" className="block mb-1 font-bold">Select Vehicle Make</label>
                     <Select
+                        inputId="vehicle-make"
                         options={makeOptions}
                         value={makeOptions.find((option) => option.value === selectedMake) || null}
                         onChange={(selectedOption) => {
@@ -60,12 +70,7 @@ export default function SSRMakeModel({ serverMakes }: Props) {
                                     disabled:opacity-50 disabled:cursor-not-allowed"                         >
                             Fetch Models
                         </button>
-                        <Link
-                            href="/"
-                            className="bg-purple-400 text-white px-4 py-2 rounded hover:bg-purple-800 transition text-center"
-                        >
-                            🔙 Back to Home
-                        </Link>
+
                     </div></div>
 
                 {loadingModels && <p className="text-green-600 mt-4">Loading models...</p>}
