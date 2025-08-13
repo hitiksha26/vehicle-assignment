@@ -18,6 +18,7 @@ export function useMakes(initialMakes: Make[] = []) {
                 const data = await res.json();
                 setMakes(data.Results);
             } catch (err) {
+                console.error("Error fetching makes:", err);
                 setError("Failed to load makes");
             } finally {
                 setLoading(false);
@@ -25,7 +26,7 @@ export function useMakes(initialMakes: Make[] = []) {
         }
 
         fetchMakes();
-    }, []);
+    }, [makes.length]);
 
     return { makes, loading, error };
 }
