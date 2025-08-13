@@ -2,23 +2,24 @@
 
 import React from "react";
 import { useState } from "react";
-import { fetchModelsForMake } from "@/hooks/useVehicleAPI";
 import Select from 'react-select';
 import Link from "next/link";
+import { useMakes } from "@/hooks/useMakes";
+import { useModels } from "@/hooks/useModels";
 
 type Make = { Make_ID: number; Make_Name: string };
-type Model = { Make_ID: number; Make_Name: string; Model_ID: number; Model_Name: string };
 
 type Props = {
     serverMakes: Make[];
 };
 
 export default function SSRMakeModel({ serverMakes }: Props) {
-    const [makes] = useState<Make[]>(serverMakes);
-    const [models, setModels] = useState<Model[]>([]);
+    const { makes } = useMakes(serverMakes);
+
     const [selectedMake, setSelectedMake] = useState('');
-    const [loadingModels, setLoadingModels] = useState(false);
     const [hasFetchedModels, setHasFetchedModels] = useState(false);
+
+    const { models, loading: loadingModels, error } = useModels(hasFetchedModels ? selectedMake : "");
 
     const makeOptions = makes.map((make) => ({
         value: make.Make_Name,
@@ -26,7 +27,7 @@ export default function SSRMakeModel({ serverMakes }: Props) {
     }));
 
     return (
-        <main className="p-6">
+        <main className="min-h-screen p-6 bg-white">
             <div className="flex justify-start mb-4">
                 <Link
                     href="/"
@@ -35,17 +36,16 @@ export default function SSRMakeModel({ serverMakes }: Props) {
                     🔙 Back to Home
                 </Link>
             </div>
-            <h1 className="text-2xl font-bold mb-6 text-center">SSR Vehicle Make & Model Finder</h1>
+            <h1 className="text-2xl font-bold mb-6 text-center text-black">SSR Vehicle Make & Model Finder</h1>
             <div className="w-full bg-gray-50 p-6 rounded shadow-md">
                 <div className="mb-2">
-                    <label htmlFor="vehicle-make" className="block mb-1 font-bold">Select Vehicle Make</label>
+                    <label htmlFor="vehicle-make" className="block mb-1 font-bold text-black">Select Vehicle Make</label>
                     <Select
                         inputId="vehicle-make"
                         options={makeOptions}
                         value={makeOptions.find((option) => option.value === selectedMake) || null}
                         onChange={(selectedOption) => {
                             setSelectedMake(selectedOption?.value || '');
-                            setModels([]);
                             setHasFetchedModels(false);
                         }}
                         placeholder="Select Make"
@@ -56,14 +56,7 @@ export default function SSRMakeModel({ serverMakes }: Props) {
                     <div className="flex flex-col sm:flex-row gap-4 mt-4">
 
                         <button
-                            onClick={async () => {
-                                if (!selectedMake) return;
-                                setHasFetchedModels(true);
-                                setLoadingModels(true);
-                                const data = await fetchModelsForMake(selectedMake);
-                                setModels(data);
-                                setLoadingModels(false);
-                            }}
+                            onClick={() => setHasFetchedModels(true)}
                             disabled={!selectedMake}
                             className="bg-blue-500 text-white px-4 py-2 rounded 
                                     enabled:hover:bg-blue-700 
@@ -74,16 +67,14 @@ export default function SSRMakeModel({ serverMakes }: Props) {
                     </div></div>
 
                 {loadingModels && <p className="text-green-600 mt-4">Loading models...</p>}
-
                 {!loadingModels && hasFetchedModels && selectedMake && models.length === 0 && (
-                    <p className="text-red-600 mt-4">No models found for the selected make.</p>
+                    <p className="text-red-600 mt-4">{error}</p>
                 )}
-
                 {!loadingModels && models.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                         {models.map((model) => (
                             <div key={model.Model_ID} className="p-4 bg-white shadow rounded hover:shadow-lg">
-                                <p className="font-medium">{model.Model_Name}</p>
+                                <p className="font-medium text-black">{model.Model_Name}</p>
                             </div>
                         ))}
                     </div>
